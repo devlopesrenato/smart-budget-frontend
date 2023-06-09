@@ -1,0 +1,25 @@
+.input{    
+    width: 100%;
+    height: 2rem;
+    padding: 0.8rem 1.2rem;
+    border: 0.1rem solid #00103e;
+    border-radius: 0.4rem;
+    font-size: 1rem;
+    background-color: 'transparent'
+}
+
+.input::placeholder {
+    color: #999;        
+}
+
+.input::hover{
+    background: rgba(var(--card-rgb), 0.1);
+    border: 1px solid rgba(var(--card-border-rgb), 0.15);
+}
+
+.alert {
+    margin: 0.1rem 0 0 0.5rem;
+    padding: 0;
+    font-size: 0.8rem
+}
+

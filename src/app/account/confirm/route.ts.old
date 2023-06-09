@@ -1,0 +1,39 @@
+
+import { api } from '@/services/api';
+import { Utils } from '@/utils/utils';
+import { NextRequest, NextResponse } from 'next/server';
+
+const _ = new Utils;
+
+export async function GET(request: NextRequest) {
+    const { searchParams } = new URL(request.nextUrl)
+    const token = searchParams.get('token')
+    let redirectTo = new URL('/', request.url)
+
+    try {
+
+        const confirm = await api.post('/users/signup/confirm-email', null, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            },
+        })
+
+        if (confirm.data.statusCode === 200) {
+            redirectTo = new URL('/account/confirm/success', request.url)
+        } else {
+            redirectTo = new URL('/account/confirm/error', request.url)
+            const cookieExpiresInSeconds = 1000
+            _.setCookie('error', JSON.stringify({ error: confirm.data.message }), { expires: cookieExpiresInSeconds })
+        }
+
+    } catch (error: any) {
+        // console.log(error.response.data.message)
+        redirectTo = new URL('/account/confirm/error', request.url)
+        const cookieExpiresInSeconds = 1000
+        _.setCookie('error', JSON.stringify({ error: error.response.data.message }), { expires: cookieExpiresInSeconds })
+    } finally {
+        return NextResponse.redirect(redirectTo)
+    }
+
+
+}
