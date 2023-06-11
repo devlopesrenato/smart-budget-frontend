@@ -16,9 +16,12 @@ interface AppContextType {
     user: User | null;
     setUser: (user: User | null) => void;
     loading: boolean;
+    setLoading: (load: boolean) => void,
     tokenConfirm: string;
     setTokenConfirm: (token: string) => void;
     openNotification: (title: string, message: string, type: 'error' | 'warn' | 'info' | 'success') => void;
+    userCreated: User | null;
+    setUserCreated: (user: User | null) => void
 };
 
 const initialAppContext: AppContextType = {
@@ -27,9 +30,12 @@ const initialAppContext: AppContextType = {
     user: null,
     setUser: () => { },
     loading: false,
+    setLoading: () => { },
     tokenConfirm: '',
     setTokenConfirm: () => { },
-    openNotification: () => { }
+    openNotification: () => { },
+    userCreated: null,
+    setUserCreated: () => { }
 };
 
 
@@ -38,6 +44,7 @@ export const AppContext = createContext<AppContextType>(initialAppContext);
 export const AppProvider: React.FC<Props> = ({ children }) => {
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState<User | null>(null);
+    const [userCreated, setUserCreated] = useState<User | null>(null);
     const [tokenConfirm, setTokenConfirm] = useState('')
     const [page, setPage] = useState('')
     const [api, contextHolder] = notification.useNotification();
@@ -99,9 +106,12 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
             user,
             setUser,
             loading,
+            setLoading,
             tokenConfirm,
             setTokenConfirm,
-            openNotification
+            openNotification,
+            userCreated,
+            setUserCreated
         }}>
             <Header />
             {contextHolder}

@@ -10,7 +10,6 @@ import { FormEvent, useContext, useEffect, useState } from 'react';
 
 import { Logo } from '@/components/Logo';
 import Link from 'next/link';
-import { setTimeout } from 'timers';
 import styles from './page.module.css';
 const _ = new Utils;
 
@@ -25,6 +24,7 @@ export default function Signin() {
   const [validationPass, setValidationPass] = useState<ErrorInputType>({ type: 'warn', message: '', show: false })
   const [validationEmail, setValidationEmail] = useState<ErrorInputType>({ type: 'warn', message: '', show: false })
   const [viewBtnAccVerify, setViewBtnAccVerify] = useState(false)
+  const [email, setEmail] = useState('')
   const [loadEmail, setLoadEmail] = useState(false)
 
   const { user, setUser, loading, openNotification, setPage } = useContext(AppContext);
@@ -42,28 +42,49 @@ export default function Signin() {
     validations({ email, password, sendLogin: true })
       .then(async loginData => {
         try {
-          const { data } = await api.post('users/signin', loginData)
-          if (data) {
-            const { id, name, email, jwtToken } = data;
-            const cookieExpiresInSeconds = 43200
-            _.setCookie('userData', JSON.stringify({ id, name, email, jwtToken }), { expires: cookieExpiresInSeconds })
-            setUser({ id, name, email, jwtToken })
-          }
+          await api.post('users/signin', loginData)
+            .then(({ data }) => {
+              const { id, name, email, jwtToken } = data;
+              const cookieExpiresInSeconds = 43200
+              _.setCookie('userData', JSON.stringify({ id, name, email, jwtToken }), { expires: cookieExpiresInSeconds })
+              setUser({ id, name, email, jwtToken })
+            })
+            .catch(err => {
+              if (err.response.data.message.includes('email not validated')) {
+                openNotification(
+                  'Conta não verificada!',
+                  'Verifique sua caixa de entrada para confirmar seu e-mail.',
+                  'warn'
+                )
+                setEmail(email)
+                setViewBtnAccVerify(true)
+                return
+              }
+              if (err.response.data.message.includes('Invalid Credentials')) {
+                setValidationPass({
+                  message: 'Autenticação inválida.',
+                  type: 'error',
+                  show: true
+                }) 
+                setValidationEmail({
+                  message: '',
+                  type: 'error',
+                  show: true
+                })                
+                return
+              }
+              openNotification(
+                'Erro ao fazer login!',
+                'Erro ao tentar fazer o login. Tente novamente!',
+                'error'
+              )
+            })
         } catch (error: any) {
-          if (error.response.data.message.includes('email not validated')) {
-            openNotification(
-              'Conta não verificada!',
-              'Verifique sua caixa de entrada para confirmar seu e-mail.',
-              'warn'
-            )
-            setViewBtnAccVerify(true)
-          } else {
-            openNotification(
-              'Erro ao fazer login!',
-              'Erro ao tentar fazer o login. \nTente novamente!',
-              'error'
-            )
-          }
+          openNotification(
+            'Erro ao fazer login!',
+            'Erro ao tentar fazer o login. Tente novamente!',
+            'error'
+          )
         }
       })
       .catch((err) => {
@@ -123,6 +144,29 @@ export default function Signin() {
       resolve({ email, password });
     });
   };
+
+  const resendValidationEmail = async () => {
+    setLoadEmail(true)
+    await api.post('users/resend-validation-email', { email })
+      .then(() => {
+        openNotification(
+          'Confirmação enviada!',
+          'Email de confirmação enviado. Verifique sua caixa de entrada para confirmar seu e-mail.',
+          'success'
+        )
+        router.push('/');
+      })
+      .catch((err) => {
+        openNotification(
+          'Erro ao enviar email!',
+          'Email de confirmação não enviado. Verifique o email digitado.',
+          'error'
+        )
+      })
+      .finally(() => {
+        setLoadEmail(false)
+      })
+  }
 
   useEffect(() => {
     if (user) {
@@ -193,7 +237,6 @@ export default function Signin() {
             }
           </button>
 
-
         </form >
 
         <button
@@ -201,15 +244,7 @@ export default function Signin() {
           disabled={loadEmail ? true : false}
           className={styles.buttonResend}
           onClick={() => {
-            setLoadEmail(true)
-            setTimeout(() => {
-              openNotification(
-                'E-mail enviado!',
-                'Enviamos um e-mail de confirmação da sua conta. Verifique sua caixa de entrada!',
-                'info'
-              )
-              router.push('/');
-            }, 5000)
+            resendValidationEmail()
           }}
         >
           {

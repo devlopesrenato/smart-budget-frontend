@@ -39,11 +39,34 @@ export default function PasswordRecovery() {
             openNotification(
               'Recuperação de senha enviada!',
               'Enviamos um e-mail de redefinição da senha. Verifique sua caixa de entrada!',
-              'error'
+              'success'
             )
             router.push('/user/signin')
           }
         } catch (error: any) {
+          if(error.response.data.message.includes('A password reset email has already')){
+            openNotification(
+              'Email já enviado!',
+              'Já foi solicitado uma redefinição em menos de 5 minutos! Aguarde para solicitar novamente.',
+              'info'
+            )
+            return
+          }
+          if(error.response.data.message.includes('email not found')){
+            setValidationEmail({
+              type: 'warn',
+              message: 'Email incorreto.',
+              show: true
+            });
+
+            openNotification(
+              'Email não encontrado!',
+              'Não encontramos nenhuma conta com este e-mail! Verifique o e-mail digitado.',
+              'warn'
+            )
+
+            return
+          }
           openNotification(
             'Erro ao recuperar senha!',
             'Erro ao tentar recuperar sua senha. Verifique o e-mail digitado!',

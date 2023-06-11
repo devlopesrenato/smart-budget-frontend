@@ -1,0 +1,23 @@
+.title { 
+    color: white
+}
+
+.button {
+    width: 80vw;
+    max-width: 30rem;
+    margin-top: 1rem;  
+    height: 2rem;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    padding: 1rem 1.2rem;
+    border-radius: var(--border-radius);      
+    border: 1px solid rgba(var(--card-border-rgb), 0.15); 
+    background: rgba(58, 4, 4, 0.8); 
+}
+
+.button:hover {
+    background: rgba(var(--card-rgb), 0.1);
+    border: 2px solid rgba(var(--card-border-rgb), 0.15);
+    cursor: pointer;
+}

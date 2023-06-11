@@ -28,7 +28,7 @@ export default function Signup() {
   const [validationPass, setValidationPass] = useState<ErrorInputType>({ type: 'warn', message: '', show: false })
   const [validationPassConfirm, setValidationPassConfirm] = useState<ErrorInputType>({ type: 'warn', message: '', show: false })
   const [pswCompare, setPswCompare] = useState<String>('')
-  const { user, openNotification, loading, setPage } = useContext(AppContext);
+  const { user, openNotification, loading, setPage, setUserCreated } = useContext(AppContext);
 
   const router = useRouter();
 
@@ -52,6 +52,12 @@ export default function Signup() {
               'Conta criada com sucesso, verifique seu email para confirmar.',
               'success'
             )
+            setUserCreated({
+              id: data.id,
+              email: data.email,
+              name: data.name,
+              jwtToken: ''
+            })
             router.push('account/create/success')
           } else {
             openNotification(
@@ -59,7 +65,7 @@ export default function Signup() {
               'Houve um erro ao tentar criar sua contra. \nTente novamente!',
               'error'
             )
-            
+
           }
         } catch (error: any) {
           if (String(error.response.data.message).includes('email already exists')) {
@@ -188,9 +194,9 @@ export default function Signup() {
       router.push('/sheet');
     }
   }, [user])
-  
+
   useEffect(() => {
-      setPage('signup')
+    setPage('signup')
   }, [])
 
   return (

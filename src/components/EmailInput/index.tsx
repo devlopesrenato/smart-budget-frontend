@@ -42,12 +42,22 @@ const EmailInput: React.FC<EmailInputProps> = ({
         placeholder={placeholder}
         onChange={handleInputChange}
         value={email}
+        style={{
+          border:
+            alert.show
+              ? (
+                alert.type === 'error'
+                  ? '1px solid #ff4d4f'
+                  : '1px solid #e4a01b'
+              )
+              : 'none'
+        }}
       />
       <p
         className={styles.alert}
         style={{
           display: alert.show ? 'flex' : 'none',
-          color: alert.type === 'error' ? 'red' : 'yellow',
+          color: alert.type === 'error' ? '#ff4d4f' : '#e4a01b',
         }}
       >
         {alert.message}

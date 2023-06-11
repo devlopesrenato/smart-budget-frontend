@@ -1,11 +1,10 @@
 'use client'
 import { Logo } from '@/components/Logo';
+import SuccessError from '@/components/SuccessError';
 import { AppContext } from '@/context/app.context';
 import { api } from '@/services/api';
 import { Utils } from '@/utils/utils';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Button, Result } from 'antd';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import styles from './page.module.css';
@@ -88,27 +87,16 @@ export default function AccountConfirmError() {
     }, [tokenConfirm])
 
     return (
-        loading
-            ? <main className={styles.main}><LoadingOutlined style={{ fontSize: 24 }} spin /></main>
-            : <main className={styles.main}>
-                <Logo />
-                <div className={styles.center}>
-                    <Result
-                        status={status}
-                        title={<span key='title' className={styles.title}>{title}</span>}
-                        subTitle={<span key='subTitle' className={styles.title}>{subTitle}</span>}
-                        extra={[
-                            <Link
-                                key="linkLogin"
-                                href={'/user/signin'}
-                            >
-                                <Button type="primary" key="login">
-                                    Login
-                                </Button>
-                            </Link>
-                        ]}
-                    />
-                </div>
-            </main >
+        <main className={styles.main}>
+            {loading
+                ? <LoadingOutlined style={{ fontSize: 24 }} spin />
+                : (
+                    <>
+                        <Logo />
+                        <SuccessError type={status} title={title} subTitle={subTitle} />
+                    </>
+                )
+            }
+        </main >
     );
 }

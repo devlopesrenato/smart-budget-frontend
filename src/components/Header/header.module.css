@@ -31,3 +31,17 @@
 .iconLogout:hover {
  color: #c80b0b
 }
+
+.link {
+  gap: 0.2rem;
+    
+  display: flex;  
+  flex-direction: row;        
+  align-items: center;
+
+  padding: 0.1rem 0.7rem;
+
+  border-radius: var(--border-radius); 
+  background: rgba(var(--card-rgb), 0.1);
+  border: 2px solid rgba(var(--card-border-rgb), 0.15);
+}

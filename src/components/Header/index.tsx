@@ -1,5 +1,6 @@
 import { AppContext } from '@/context/app.context';
 import { Utils } from '@/utils/utils';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import { FiHome, FiLogOut } from 'react-icons/fi';
@@ -45,15 +46,16 @@ export const Header: React.FC = () => {
                 </div>
             ) : (
                 <div className={styles.headerOff}>
-                    <FiHome
+                    <Link
+                        href={'/'}
+                        className={styles.link}
                         style={{
                             display: viewGoBack ? 'flex' : 'none'
-                        }}
-                        onClick={() =>
-                            router.push('/')
-                        }
-                    />
-                    
+                        }}>
+                        <FiHome />
+                        Página Inicial
+                    </Link>
+
                 </div>
             )
     )
