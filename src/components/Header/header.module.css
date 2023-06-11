@@ -15,9 +15,10 @@
   flex-direction: row;        
   align-items: center;
 
-  position: relative;
+  position: fixed;
   padding: 0 1rem 0 1rem;  
   gap: 1rem;
+  z-index: 1000;
 }
 
 .header svg, .headerOff svg {

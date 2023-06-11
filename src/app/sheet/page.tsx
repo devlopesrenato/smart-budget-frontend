@@ -1,5 +1,5 @@
 'use client'
-import { Logo } from '@/components/Logo';
+import { SheetsView } from '@/components/SheetsView';
 import { AppContext } from '@/context/app.context';
 import { Utils } from '@/utils/utils';
 import { LoadingOutlined } from '@ant-design/icons';
@@ -24,13 +24,11 @@ export default function Sheet() {
   }, [user, loading])
 
   return (
-    loading
-      ? <main className={styles.main}><LoadingOutlined style={{ fontSize: 24 }} spin /></main>
-      : <main className={styles.main}>
-        <div className={styles.center}>
-          <Logo />
-        </div>
-
-      </main>
+    <main className={styles.main}>
+      {loading
+        ? <LoadingOutlined style={{ fontSize: 24 }} spin />
+        : <SheetsView />
+      }
+    </main>
   );
 }
