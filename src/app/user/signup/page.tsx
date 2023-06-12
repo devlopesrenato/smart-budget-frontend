@@ -8,6 +8,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useContext, useEffect, useState } from 'react';
 
+import { Button } from '@/components/Button';
 import { Logo } from '@/components/Logo';
 import TextInput from '@/components/TextInput';
 import styles from './page.module.css';
@@ -271,17 +272,16 @@ export default function Signup() {
             }}
             placeholder={'Repita sua senha'}
           />
-          <button
-            type='submit'
-            disabled={load ? true : false}
-            className={styles.button}
-          >
-            {
+
+          <Button
+            title={
               load
                 ? <p className={styles.load}>Enviando dados... <LoadingOutlined style={{ fontSize: 24 }} spin /></p>
                 : <p>CRIAR CONTA</p>
             }
-          </button>
+            type='submit'
+            disabled={load ? true : false}
+          />
 
         </form >
 

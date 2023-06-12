@@ -8,6 +8,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useContext, useEffect, useState } from 'react';
 
+import { Button } from '@/components/Button';
 import { Logo } from '@/components/Logo';
 import Link from 'next/link';
 import styles from './page.module.css';
@@ -65,12 +66,12 @@ export default function Signin() {
                   message: 'Autenticação inválida.',
                   type: 'error',
                   show: true
-                }) 
+                })
                 setValidationEmail({
                   message: '',
                   type: 'error',
                   show: true
-                })                
+                })
                 return
               }
               openNotification(
@@ -225,35 +226,30 @@ export default function Signin() {
             <p className={styles.recoverPass}>Esqueci minha senha.</p>
           </Link>
 
-          <button
-            type='submit'
-            disabled={load ? true : false}
-            className={styles.button}
-          >
-            {
+          <Button
+            title={
               load
                 ? <p className={styles.load}>Entrando... <LoadingOutlined style={{ fontSize: 24 }} spin /></p>
                 : <p>ENTRAR</p>
             }
-          </button>
+            type='submit'
+            disabled={load ? true : false}
+          />
 
         </form >
-
-        <button
-          style={{ display: viewBtnAccVerify ? 'flex' : 'none' }}
-          disabled={loadEmail ? true : false}
-          className={styles.buttonResend}
-          onClick={() => {
-            resendValidationEmail()
-          }}
-        >
-          {
-            loadEmail
-              ? <p className={styles.load}>Enviando... <LoadingOutlined style={{ fontSize: 24 }} spin /></p>
-              : <p>Reenviar e-mail de confirmação?</p>
-          }
-        </button>
-
+        <div className={styles.form}        >
+          <Button
+            type='button'
+            disabled={load ? true : false}
+            visible={viewBtnAccVerify}
+            title={
+              loadEmail
+                ? <p className={styles.load}>Enviando... <LoadingOutlined style={{ fontSize: 24 }} spin /></p>
+                : <p>Reenviar e-mail de confirmação?</p>
+            }
+            onClick={() => resendValidationEmail()}
+          />
+        </div>
       </main>
   );
 }

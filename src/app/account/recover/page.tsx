@@ -7,6 +7,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useContext, useEffect, useState } from 'react';
 
+import { Button } from '@/components/Button';
 import { Logo } from '@/components/Logo';
 import SuccessError from '@/components/SuccessError';
 import styles from './page.module.css';
@@ -252,17 +253,16 @@ export default function AccountRecover() {
                   }}
                   placeholder={'Repita sua senha'}
                 />
-                <button
-                  type='submit'
-                  disabled={load ? true : false}
-                  className={styles.button}
-                >
-                  {
+
+                <Button
+                  title={
                     load
                       ? <p className={styles.load}>Enviando dados... <LoadingOutlined style={{ fontSize: 24 }} spin /></p>
                       : <p>REDEFINIR SENHA</p>
                   }
-                </button>
+                  type='submit'
+                  disabled={load ? true : false}
+                />
 
               </form >
             </>)

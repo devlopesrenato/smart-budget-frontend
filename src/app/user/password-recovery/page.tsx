@@ -7,6 +7,7 @@ import { LoadingOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useContext, useEffect, useState } from 'react';
 
+import { Button } from '@/components/Button';
 import { Logo } from '@/components/Logo';
 import styles from './page.module.css';
 const _ = new Utils;
@@ -153,18 +154,16 @@ export default function PasswordRecovery() {
                 .catch((err) => { })
             }}
           />
-
-          <button
-            type='submit'
-            disabled={load ? true : false}
-            className={styles.button}
-          >
-            {
+        
+          <Button
+            title={
               load
                 ? <p className={styles.load}>Enviando... <LoadingOutlined style={{ fontSize: 24 }} spin /></p>
                 : <p>ENVIAR</p>
             }
-          </button>
+            type='submit'
+            disabled={load ? true : false}
+          />
 
         </form >
 
