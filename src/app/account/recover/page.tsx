@@ -64,7 +64,7 @@ export default function AccountRecover() {
                 'success'
               )
               setLoad(true)
-              router.push('user/signin')
+              router.push('/user/signin')
             })
             .catch(err => {
               openNotification(
