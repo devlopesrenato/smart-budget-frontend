@@ -5,6 +5,7 @@
     justify-content: center;
     display: flex;
     padding: 1rem 1.2rem;
+    color: white;
     border-radius: var(--border-radius);      
     border: 1px solid rgba(var(--card-border-rgb), 0.15); 
     background: rgb(74 6 5 / 86%); 

@@ -1,11 +1,11 @@
 import { AppContext } from '@/context/app.context'
 import { api } from '@/services/api'
 import { LoadingOutlined, MoreOutlined } from '@ant-design/icons'
-import { Dropdown, Menu } from 'antd'
+import { Dropdown, Menu, Tooltip } from 'antd'
 import Link from 'next/link'
 import { useContext, useState } from 'react'
+import { AiFillFileAdd } from 'react-icons/ai'
 import { BiRename } from 'react-icons/bi'
-import { BsBuildingAdd } from 'react-icons/bs'
 import { FaTrashAlt } from 'react-icons/fa'
 import { LuFileSpreadsheet } from 'react-icons/lu'
 import { SheetContext } from '../context/sheets-view.context'
@@ -15,24 +15,24 @@ interface SheetListItemProps {
     sheet: Sheet
 }
 
-interface SheetListProps {
-    sheets: Sheet[]
-}
-
 const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
     const [editing, setEditing] = useState(false);
+    const [deleting, setDeleting] = useState(false);
     const [newDescription, setNewDescription] = useState(sheet.description);
     const [oldDescription, setOldDescription] = useState(sheet.description);
+    const [already, setAlready] = useState(false);
 
-    const { user } = useContext(AppContext);
-    const { refreshData } = useContext(SheetContext)
+    const { user, openNotification } = useContext(AppContext);
+    const { refreshData, descriptionAlreadyExists } = useContext(SheetContext)
 
     const renameItem = () => {
         setOldDescription(newDescription)
         setEditing(true);
+        setAlready(false);
     };
 
     const deleteItem = async () => {
+        setDeleting(true)
         try {
             await api.request({
                 method: 'DELETE',
@@ -45,6 +45,12 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
             refreshData()
 
         } catch (error) {
+            setDeleting(false)
+            openNotification(
+                `Erro ao excluir ${sheet.description}`,
+                'Não foi possível excluir este item! Tente novamente.',
+                'error'
+            )
             console.log(error)
         }
     };
@@ -111,84 +117,155 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
         </Menu>
     );
 
+    function descriptionExists(description: string) {
+        if (descriptionAlreadyExists(description, sheet.id)) {
+            setAlready(true)
+        } else {
+            setAlready(false)
+        }
+    }
+
     return (
         <div className={styles.sheetList} key={sheet.id}>
             {editing ? (
                 <div className={styles.sheetDescription}>
                     <BiRename size={25} color='#00C5FF' />
-                    <input
-                        onBlur={saveItem}
-                        className={styles.inputDescription}
-                        value={newDescription}
-                        onChange={(e) => setNewDescription(e.target.value)}
-                    />
+                    <Tooltip title="Essa descrição já existe." open={already} color={'gold'} >
+                        <input
+                            autoFocus
+                            onBlur={saveItem}
+                            className={styles.inputDescription}
+                            value={newDescription}
+                            onKeyUp={(e) => { e.key === "Enter" && saveItem() }}
+                            onChange={(e) => {
+                                setNewDescription(e.target.value)
+                                descriptionExists(e.target.value)
+                            }}
+                        />
+                    </Tooltip>
                 </div>
             ) : (
                 <Link
                     style={{ display: 'flex' }}
-                    href={`/sheet/${sheet.id}`}
+                    href={
+                        deleting
+                            ? '/sheet/'
+                            : `/sheet/${sheet.id}`
+                    }
+                    aria-disabled={deleting}
+
                     className={styles.sheetDescription}
                 >
-                    <LuFileSpreadsheet />
-                    <p className={styles.description}>{newDescription}</p>
+                    <LuFileSpreadsheet className={deleting ? styles.deleting : ''} />
+                    <p className={deleting ? styles.deleting : styles.description}>{newDescription}</p>
                 </Link>
             )}
-            <Dropdown dropdownRender={() => menu} placement="bottomRight">
-                <MoreOutlined className={styles.iconMore} />
-            </Dropdown>
+            {
+                deleting
+                    ? (<FaTrashAlt color='#D94848' className={styles.deleting} />)
+                    : (<Dropdown dropdownRender={() => menu} placement="bottomRight">
+                        <MoreOutlined className={styles.iconMore} />
+                    </Dropdown>)
+            }
         </div>
     );
 };
 
 export const SheetList = () => {
-    const { data, loading, refreshData } = useContext(SheetContext)
+    const { data, loading, refreshData, descriptionAlreadyExists } = useContext(SheetContext)
     const { user } = useContext(AppContext);
     const [description, setDescription] = useState('')
+    const [loadAddNew, setLoadAddNew] = useState(false)
+    const [msgAlertAdd, setMsgAlertAdd] = useState('')
 
     async function saveNew() {
-        try {
-            await api.request({
-                method: 'POST',
-                url: `/sheets`,
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${user?.jwtToken}`
-                },
-                data: { description: description }
-            })
-            setDescription('')
-            refreshData()
-        } catch (error) {
-            console.log(error)
+        if (
+            description !== '' &&
+            description.length > 2 &&
+            !descriptionAlreadyExists(description, -1)
+        ) {
+            setLoadAddNew(true)
+            setMsgAlertAdd('')
+            try {
+                await api.request({
+                    method: 'POST',
+                    url: `/sheets`,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${user?.jwtToken}`
+                    },
+                    data: { description: description }
+                })
+                    .then(() => {
+                        setDescription('')
+                    })
+                    .catch((err) => {
+                        if (err.response.data.message.includes('already')) {
+                            setMsgAlertAdd('Essa descrição já exite.')
+                            return
+                        }
+                        setMsgAlertAdd('Erro ao adicionar folha.')
+                    })
+                refreshData()
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setLoadAddNew(false)
+            }
+        }
+    }
+
+    function descriptionExists(description: string) {
+        if (descriptionAlreadyExists(description, -1)) {
+            setMsgAlertAdd('Essa descrição já exite.')
+        } else {
+            setMsgAlertAdd('')
         }
     }
     return (
-        <div className={styles.center}>
-            {
-                loading
-                    ? <LoadingOutlined style={{ fontSize: 24 }} spin />
-                    : (
-                        data.length
-                            ? (<>
-                                <div className={styles.options}>
-                                    <input
-                                        className={styles.inputDescriptionAdd}
-                                        value={description}
-                                        onChange={(e) => setDescription(e.target.value)}
+        loading
+            ? <LoadingOutlined style={{ fontSize: 24 }} spin />
+            : (
+                <>
+                    <div className={styles.headerAdd}>
+                        <div className={styles.inputButton}>
+                            <input
+                                disabled={loadAddNew}
+                                placeholder='Adicionar...'
+                                className={styles.inputDescriptionAdd}
+                                value={description}
+                                onChange={(e) => {
+                                    setDescription(e.target.value)
+                                    descriptionExists(e.target.value)
+                                }}
+                            />
+                            {
+                                loadAddNew
+                                    ? <LoadingOutlined
+                                        className={styles.iconAdd}
+                                        style={{ fontSize: 24 }}
+                                        spin
                                     />
-                                    <BsBuildingAdd
-                                        className={styles.iconOptions}
+                                    : <AiFillFileAdd
+                                        className={styles.iconAdd}
                                         style={{ fontSize: 24 }}
                                         onClick={saveNew}
                                     />
-
-                                </div>
-                                {data.map((sheet) => (
-                                    <SheetListItem key={sheet.id} sheet={sheet} />
-                                ))}
-                            </>) : <p>Não há dados</p>
-                    )
-            }
-        </div>
+                            }
+                        </div>
+                        <p className={styles.alertAdd}>{msgAlertAdd}</p>
+                    </div>
+                    <div className={styles.center}>
+                        {
+                            data.length
+                                ? (<>
+                                    {data.map((sheet) => (
+                                        <SheetListItem key={sheet.id} sheet={sheet} />
+                                    ))}
+                                </>) : <p>Não há dados</p>
+                        }
+                    </div>
+                </>
+            )
     );
 };

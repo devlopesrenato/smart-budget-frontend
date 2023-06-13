@@ -10,6 +10,7 @@ const _ = new Utils()
 
 export const Header: React.FC = () => {
     const [viewGoBack, setViewGoBack] = useState(false)
+    const [viewHeader, setViewHeader] = useState(false)
     const { user, loading, setUser, page } = useContext(AppContext);
     const router = useRouter()
 
@@ -19,12 +20,33 @@ export const Header: React.FC = () => {
         'passwordRecovery'
     ]
 
+    const pagesWithHeader: string[] = [
+        'sheet',
+    ]
+
+    const title = {
+        'none': '',
+        'sheet': 'Folhas de Orçamento'
+    }
+
+    function getTitle(page: string) {
+        // @ts-ignore
+        return title[page]
+    }
+
     useEffect(() => {
         if (pagesWithGoBack.includes(page)) {
             setViewGoBack(true)
         } else {
             setViewGoBack(false)
         }
+
+        if (pagesWithHeader.includes(page)) {
+            setViewHeader(true)
+        } else {
+            setViewHeader(false)
+        }
+
     }, [page])
 
     function logout() {
@@ -35,14 +57,22 @@ export const Header: React.FC = () => {
     return (
         (user !== null && !loading) ?
             (
-                <div className={styles.header} >
-                    <p>{user.name}</p>
-                    <FiLogOut
-                        className={styles.iconLogout}
-                        onClick={() =>
-                            logout()
-                        }
-                    />
+                <div
+                    className={styles.header}
+                    style={{
+                        display: viewHeader ? 'flex' : 'none'
+                    }}
+                >
+                    <p>{getTitle(page)}</p>
+                    <div className={styles.userSection}>
+                        <p>{user.name}</p>
+                        <FiLogOut
+                            className={styles.iconLogout}
+                            onClick={() =>
+                                logout()
+                            }
+                        />
+                    </div>
                 </div>
             ) : (
                 <div className={styles.headerOff}>
