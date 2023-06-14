@@ -1,9 +1,13 @@
 import { AppContext } from '@/context/app.context';
 import { Utils } from '@/utils/utils';
+import { SolutionOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar } from 'antd';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
-import { FiHome, FiLogOut } from 'react-icons/fi';
+import { FiHome } from 'react-icons/fi';
+import { HiOutlineLogout } from 'react-icons/hi';
+import { DropdownMenu } from '../DropdownMenu';
 import styles from './header.module.css';
 
 const _ = new Utils()
@@ -22,11 +26,13 @@ export const Header: React.FC = () => {
 
     const pagesWithHeader: string[] = [
         'sheet',
+        'details'
     ]
 
     const title = {
         'none': '',
-        'sheet': 'Folhas de Orçamento'
+        'sheet': 'Folhas de Orçamento',
+        'details': 'Detalhes',
     }
 
     function getTitle(page: string) {
@@ -54,6 +60,20 @@ export const Header: React.FC = () => {
         _.removeCookie('userData')
     }
 
+    const itemsMenu = [
+        {
+            label: 'Minha Conta',
+            key: 'account',
+            icon: <SolutionOutlined style={{ color: '#00C5FF' }} size={18} />
+        },
+        {
+            label: 'Sair',
+            key: 'logout',
+            icon: <HiOutlineLogout color='#D94848' size={18} />,
+            action: () => logout()
+        }
+    ]
+
     return (
         (user !== null && !loading) ?
             (
@@ -65,13 +85,12 @@ export const Header: React.FC = () => {
                 >
                     <p>{getTitle(page)}</p>
                     <div className={styles.userSection}>
-                        <p>{user.name}</p>
-                        <FiLogOut
-                            className={styles.iconLogout}
-                            onClick={() =>
-                                logout()
-                            }
-                        />
+                        <DropdownMenu
+                            items={itemsMenu}
+                            placement={'bottomLeft'}
+                        >
+                            <Avatar style={{ backgroundColor: '#332d2d' }} icon={<UserOutlined />} />
+                        </DropdownMenu>
                     </div>
                 </div>
             ) : (
