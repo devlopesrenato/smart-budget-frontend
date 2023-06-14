@@ -25,7 +25,7 @@ export default function Sheet() {
 
   return (
     <main className={styles.main}>
-      {loading
+      {(user === null || loading)
         ? <LoadingOutlined style={{ fontSize: 24 }} spin />
         : <SheetsView />
       }

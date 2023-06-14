@@ -1,12 +1,14 @@
+import { DropdownMenu } from '@/components/DropdownMenu'
 import { AppContext } from '@/context/app.context'
 import { api } from '@/services/api'
 import { LoadingOutlined, MoreOutlined } from '@ant-design/icons'
-import { Dropdown, Menu, Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 import Link from 'next/link'
 import { useContext, useState } from 'react'
 import { AiFillFileAdd } from 'react-icons/ai'
 import { BiRename } from 'react-icons/bi'
 import { FaTrashAlt } from 'react-icons/fa'
+import { IoDuplicateSharp } from 'react-icons/io5'
 import { LuFileSpreadsheet } from 'react-icons/lu'
 import { SheetContext } from '../context/sheets-view.context'
 import styles from './sheet-list.module.css'
@@ -23,7 +25,7 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
     const [already, setAlready] = useState(false);
 
     const { user, openNotification } = useContext(AppContext);
-    const { refreshData, descriptionAlreadyExists } = useContext(SheetContext)
+    const { refreshData, descriptionAlreadyExists, data } = useContext(SheetContext)
 
     const renameItem = () => {
         setOldDescription(newDescription)
@@ -76,12 +78,43 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
         }
     };
 
+    const duplicateItem = async () => {
+        try {
+            const newItemDescription = generateDuplicateDescription(sheet.description)
+
+            await api.request({
+                method: 'POST',
+                url: `/sheets`,
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${user?.jwtToken}`
+                },
+                data: { description: newItemDescription }
+            }).then(() => {
+                refreshData()
+            })
+        } catch (error) {
+            openNotification(
+                'Erro ao duplicar item!',
+                `Erro ao duplicar ${sheet.description}.`,
+                'error'
+            )
+            console.log(error)
+        }
+    }
+
     const items = [
         {
             label: 'Renomear',
             key: 'rename',
             icon: <BiRename color='#00C5FF' />,
             action: () => renameItem()
+        },
+        {
+            label: 'Duplicar',
+            key: 'duplicate',
+            icon: <IoDuplicateSharp color='#ffb02e' />,
+            action: () => duplicateItem()
         },
         {
             label: 'Excluir',
@@ -91,38 +124,30 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
         },
     ]
 
-    const menu = (
-        <Menu
-            rootClassName={styles.menuMore}
-            style={{
-                backgroundColor: '#2e3034',
-                borderRadius: 'var(--border-radius)',
-                transition: 'background 200ms, border 200ms',
-                background: 'rgba(78, 80, 88, 0.91)',
-                border: '1px solid rgba(var(--card-border-rgb), 0.15)',
-                color: 'white',
-                textShadow: '0px 2px 4px rgba(0, 0, 0, 0.3)',
-            }}
-        >
-            {items.map(item =>
-                <Menu.Item
-                    style={{ color: 'white' }}
-                    icon={item.icon}
-                    key={item.key}
-                    onClick={item.action}
-                >
-                    {item.label}
-                </Menu.Item>
-            )}
-        </Menu>
-    );
-
     function descriptionExists(description: string) {
         if (descriptionAlreadyExists(description, sheet.id)) {
             setAlready(true)
         } else {
             setAlready(false)
         }
+    }
+
+    const generateDuplicateDescription = (originalDescription: string) => {
+        let duplicateCount = 0
+        let newItemDescription = originalDescription
+
+        while (isDescriptionDuplicate(newItemDescription)) {
+            duplicateCount++
+            newItemDescription = `${originalDescription} (cópia ${duplicateCount})`
+        }
+
+        return newItemDescription
+    }
+
+    const isDescriptionDuplicate = (description: string) => {
+        return data.some(({ description: existingDescription }) => {
+            return existingDescription === description
+        })
     }
 
     return (
@@ -146,7 +171,7 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
                 </div>
             ) : (
                 <Link
-                    style={{ display: 'flex' }}
+                    style={{ display: 'flex', width: '90%' }}
                     href={
                         deleting
                             ? '/sheet/'
@@ -163,9 +188,11 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
             {
                 deleting
                     ? (<FaTrashAlt color='#D94848' className={styles.deleting} />)
-                    : (<Dropdown dropdownRender={() => menu} placement="bottomRight">
-                        <MoreOutlined className={styles.iconMore} />
-                    </Dropdown>)
+                    : (
+                        <DropdownMenu items={items}                    >
+                            <MoreOutlined className={styles.iconMore} />
+                        </DropdownMenu>
+                    )
             }
         </div>
     );
@@ -223,38 +250,38 @@ export const SheetList = () => {
         }
     }
     return (
-        loading
-            ? <LoadingOutlined style={{ fontSize: 24 }} spin />
-            : (
-                <>
-                    <div className={styles.headerAdd}>
-                        <div className={styles.inputButton}>
-                            <input
-                                disabled={loadAddNew}
-                                placeholder='Adicionar...'
-                                className={styles.inputDescriptionAdd}
-                                value={description}
-                                onChange={(e) => {
-                                    setDescription(e.target.value)
-                                    descriptionExists(e.target.value)
-                                }}
+        <>
+            <div className={styles.headerAdd}>
+                <div className={styles.inputButton}>
+                    <input
+                        disabled={loadAddNew}
+                        placeholder='Adicionar...'
+                        className={styles.inputDescriptionAdd}
+                        value={description}
+                        onChange={(e) => {
+                            setDescription(e.target.value)
+                            descriptionExists(e.target.value)
+                        }}
+                    />
+                    {
+                        loadAddNew
+                            ? <LoadingOutlined
+                                className={styles.iconAdd}
+                                style={{ fontSize: 24 }}
+                                spin
                             />
-                            {
-                                loadAddNew
-                                    ? <LoadingOutlined
-                                        className={styles.iconAdd}
-                                        style={{ fontSize: 24 }}
-                                        spin
-                                    />
-                                    : <AiFillFileAdd
-                                        className={styles.iconAdd}
-                                        style={{ fontSize: 24 }}
-                                        onClick={saveNew}
-                                    />
-                            }
-                        </div>
-                        <p className={styles.alertAdd}>{msgAlertAdd}</p>
-                    </div>
+                            : <AiFillFileAdd
+                                className={styles.iconAdd}
+                                style={{ fontSize: 24 }}
+                                onClick={saveNew}
+                            />
+                    }
+                </div>
+                <p className={styles.alertAdd}>{msgAlertAdd}</p>
+            </div>
+            {loading
+                ? <LoadingOutlined style={{ marginTop: '3rem', fontSize: 24 }} spin />
+                : (
                     <div className={styles.center}>
                         {
                             data.length
@@ -262,10 +289,10 @@ export const SheetList = () => {
                                     {data.map((sheet) => (
                                         <SheetListItem key={sheet.id} sheet={sheet} />
                                     ))}
-                                </>) : <p>Não há dados</p>
+                                </>) : <p>Não há dados...</p>
                         }
                     </div>
-                </>
-            )
+                )}
+        </>
     );
 };

@@ -30,9 +30,7 @@ export const SheetsProvider: React.FC<Props> = ({ children }) => {
     const { user } = useContext(AppContext);
 
     async function refreshData() {
-        try {
-            // setLoading(true);            
-            // setData([]);
+        try {            
             const response = await api.get('sheets', {
                 headers: {
                     Authorization: `Bearer ${user?.jwtToken}`
@@ -61,6 +59,7 @@ export const SheetsProvider: React.FC<Props> = ({ children }) => {
     }
 
     useEffect(() => {
+        setLoading(true)
         refreshData()
     }, [])
 

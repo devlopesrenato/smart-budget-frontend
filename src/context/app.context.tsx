@@ -3,6 +3,7 @@ import { Header } from '@/components/Header';
 import { Utils } from '@/utils/utils';
 import { CloseOutlined } from '@ant-design/icons';
 import { notification } from 'antd';
+import { useRouter } from 'next/navigation';
 import React, { createContext, useEffect, useState } from 'react';
 import styles from './app.module.css';
 
@@ -48,7 +49,8 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
     const [tokenConfirm, setTokenConfirm] = useState('')
     const [page, setPage] = useState('')
     const [api, contextHolder] = notification.useNotification();
-
+    const router = useRouter();
+    
     const utils = new Utils;
 
     const openNotification = (title: string, message: string, type: 'error' | 'warn' | 'info' | 'success') => {
@@ -98,6 +100,16 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
         }
 
     }, [])
+
+    const authenticatedPages: string[] = [
+        'sheet',
+        'details'
+    ]  
+    useEffect(() => {
+        if (authenticatedPages.includes(page) && user === null && !loading) {
+          router.push('/user/signin');
+        }
+      }, [user, loading])
 
     return (
         <AppContext.Provider value={{

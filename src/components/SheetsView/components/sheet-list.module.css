@@ -31,14 +31,14 @@
   box-shadow: inset 1px 1px 0 rgba(var(--card-border-rgb), 0.15);
 }
 
-.sheetDescription {
+.sheetDescription {  
   gap: 0.3rem;
   display: flex;  
   align-items: center;
 }
 
 .sheetDescription svg{
-  font-size: 1.2rem;
+  width: 15px;  
 }
 
 .select {
@@ -133,7 +133,8 @@
   text-overflow: ellipsis;
 }
 
-.description { 
+.description {
+  max-width: 90%;  
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
