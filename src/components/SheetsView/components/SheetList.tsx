@@ -175,7 +175,7 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
                     href={
                         deleting
                             ? '/sheet/'
-                            : `/sheet/${sheet.id}`
+                            : `/sheet/${sheet.id}/`
                     }
                     aria-disabled={deleting}
 
