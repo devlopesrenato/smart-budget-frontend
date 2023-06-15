@@ -2,7 +2,7 @@ import { Dropdown, Menu } from "antd";
 import { ReactNode } from "react";
 
 interface ItemType {
-    label: string,
+    label: string | ReactNode,
     key: string | number,
     icon?: ReactNode,
     action?: () => void
@@ -31,7 +31,7 @@ export const DropdownMenu: React.FC<Props> = ({ children, items = [], placement 
             }}
         >
             {items.map(item =>
-                <Menu.Item
+                <Menu.Item                    
                     style={{ color: 'white' }}
                     icon={item.icon}
                     key={item.key}

@@ -51,3 +51,9 @@
   background: rgba(var(--card-rgb), 0.1);
   border: 2px solid rgba(var(--card-border-rgb), 0.15);
 }
+
+.userNameMenu {
+  width: 100%;
+  display: flex;
+  justify-content: center
+}

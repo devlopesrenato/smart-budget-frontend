@@ -45,54 +45,6 @@
   display: none
 }
 
-/* #area add */
-.headerAdd {
-  position: fixed;
-  top: 3rem;
-  width: 100%;
-  max-width: 500px;
-  min-width: 300px;  
-  padding: 0.8rem 1rem 0.5rem 1rem ;
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  align-items: center;
-  background-color: #1d0608;    
-  z-index: 1000
-}
-
-.iconAdd {
-  color: #10e6bc
-}
- 
-.inputButton{
-  display: flex;
-  justify-content: space-between;
-  flex-direction: row;
-  width: 100%;
-  max-width: 500px;
-  min-width: 300px;
-}
-
-.alertAdd {
-  width: 100%;
-  color: #e4a01b;
-  font-size: 0.8rem;
-  padding: 0.1rem 0 0 0;
-}
-.inputDescriptionAdd {
-  max-width: 500px;
-  min-width: 300px;
-  font-size: 1rem; 
-  color: #FFF;
-  background-color: transparent;
-  border: none;
-  box-shadow: inset 0 -1px 0 rgba(var(--card-border-rgb), 0.15);
-  display: flex;
-  justify-content: space-between;
-}
-/* #area add */
-
 .iconMore {
  padding: 0.2rem;
  background-color: 'red'

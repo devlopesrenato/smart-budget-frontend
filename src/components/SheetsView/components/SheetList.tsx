@@ -4,13 +4,14 @@ import { api } from '@/services/api'
 import { LoadingOutlined, MoreOutlined } from '@ant-design/icons'
 import { Tooltip } from 'antd'
 import { useRouter } from 'next/navigation'
-import { useContext, useState } from 'react'
-import { AiFillFileAdd } from 'react-icons/ai'
+import { useContext, useEffect, useState } from 'react'
 import { BiRename } from 'react-icons/bi'
 import { FaTrashAlt } from 'react-icons/fa'
 import { IoDuplicateSharp } from 'react-icons/io5'
 import { LuFileSpreadsheet } from 'react-icons/lu'
 import { SheetContext } from '../context/sheets-view.context'
+import { HeaderAddSearch } from './HeaderAddSearch'
+import Details from './SheetDetail/details'
 import styles from './sheet-list.module.css'
 
 interface SheetListItemProps {
@@ -206,100 +207,64 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
 };
 
 export const SheetList = () => {
-    const { data, loading, refreshData, descriptionAlreadyExists } = useContext(SheetContext)
-    const { user } = useContext(AppContext);
-    const [description, setDescription] = useState('')
-    const [loadAddNew, setLoadAddNew] = useState(false)
-    const [msgAlertAdd, setMsgAlertAdd] = useState('')
+    const { data, loading } = useContext(SheetContext)
+    const { setPage, setIdSheetDetail, idSheetDetail } = useContext(AppContext);
 
-    async function saveNew() {
-        if (
-            description !== '' &&
-            description.length > 2 &&
-            !descriptionAlreadyExists(description, -1)
-        ) {
-            setLoadAddNew(true)
-            setMsgAlertAdd('')
-            try {
-                await api.request({
-                    method: 'POST',
-                    url: `/sheets`,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${user?.jwtToken}`
-                    },
-                    data: { description: description }
-                })
-                    .then(() => {
-                        setDescription('')
-                    })
-                    .catch((err) => {
-                        if (err.response.data.message.includes('already')) {
-                            setMsgAlertAdd('Essa descrição já exite.')
-                            return
-                        }
-                        setMsgAlertAdd('Erro ao adicionar folha.')
-                    })
-                refreshData()
-            } catch (error) {
-                console.log(error)
-            } finally {
-                setLoadAddNew(false)
+    const [loadPage, setLoadPage] = useState<boolean>(true)
+
+    const router = useRouter();
+
+    function getSheetIDByRoute() {
+        try {
+            const url = new URL(window.location.href);
+            const id = url.searchParams.get('id');
+            if (id?.length) {
+                setIdSheetDetail(Number(id))
+                setLoadPage(false)
+            } else {
+                setLoadPage(false)
             }
+        } catch (error) {
+            setLoadPage(false)
         }
     }
 
-    function descriptionExists(description: string) {
-        if (descriptionAlreadyExists(description, -1)) {
-            setMsgAlertAdd('Essa descrição já exite.')
-        } else {
-            setMsgAlertAdd('')
-        }
-    }
+    useEffect(() => {
+        getSheetIDByRoute()
+    }, [])
+
     return (
         <>
-            <div className={styles.headerAdd}>
-                <div className={styles.inputButton}>
-                    <input
-                        disabled={loadAddNew}
-                        placeholder='Adicionar...'
-                        className={styles.inputDescriptionAdd}
-                        value={description}
-                        onChange={(e) => {
-                            setDescription(e.target.value)
-                            descriptionExists(e.target.value)
-                        }}
-                    />
-                    {
-                        loadAddNew
-                            ? <LoadingOutlined
-                                className={styles.iconAdd}
-                                style={{ fontSize: 24 }}
-                                spin
-                            />
-                            : <AiFillFileAdd
-                                className={styles.iconAdd}
-                                style={{ fontSize: 24 }}
-                                onClick={saveNew}
-                            />
-                    }
-                </div>
-                <p className={styles.alertAdd}>{msgAlertAdd}</p>
-            </div>
-            {loading
-                ? <LoadingOutlined style={{ marginTop: '3rem', fontSize: 24 }} spin />
+            {(loadPage)
+                ? <LoadingOutlined style={{ fontSize: 24 }} spin />
                 : (
-                    <div className={styles.center}>
-                        {
-                            data.length
-                                ? (<>
-                                    {data.map((sheet) => (
-                                        <SheetListItem key={sheet.id} sheet={sheet} />
-                                    ))}
-                                </>) : <p>Não há dados...</p>
-                        }
-                    </div>
-                )}
+                    idSheetDetail
+                        ? (
+                            <Details params={{
+                                id: idSheetDetail
+                            }} />
+                        )
+                        : (
+                            <>
+                                <HeaderAddSearch />
+                                {loading
+                                    ? <LoadingOutlined style={{ marginTop: '3rem', fontSize: 24 }} spin />
+                                    : (
+                                        <div className={styles.center}>
+                                            {
+                                                data.length
+                                                    ? (<>
+                                                        {data.map((sheet) => (
+                                                            <SheetListItem key={sheet.id} sheet={sheet} />
+                                                        ))}
+                                                    </>) : <p>Não há dados...</p>
+                                            }
+                                        </div>
+                                    )}
+                            </>
+                        )
+                )
+            }
         </>
     );
 };

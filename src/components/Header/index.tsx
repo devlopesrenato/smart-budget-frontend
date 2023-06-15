@@ -62,6 +62,14 @@ export const Header: React.FC = () => {
 
     const itemsMenu = [
         {
+            label:
+                <p className={styles.userNameMenu}>
+                    {user?.name.slice(0, 15)}
+                    {user && user.name.length > 15 ? '...' : ''}
+                </p>,
+            key: 'userName'
+        },
+        {
             label: 'Minha Conta',
             key: 'account',
             icon: <SolutionOutlined style={{ color: '#00C5FF' }} size={18} />

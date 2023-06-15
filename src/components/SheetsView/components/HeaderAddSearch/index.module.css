@@ -1,0 +1,110 @@
+.headerAdd {
+    position: fixed;
+    top: 3rem;
+    width: 100%;
+    max-width: 500px;
+    min-width: 300px;  
+    padding: 0.8rem 1rem 0.5rem 1rem ;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    background-color: #1d0608;    
+    z-index: 1000
+}
+
+.inputButton{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 100%;
+    max-width: 500px;
+    min-width: 300px;
+}
+
+.inputDescriptionAdd {
+    max-width: 500px;
+    min-width: 300px;
+    font-size: 1rem; 
+    color: #FFF;
+    background-color: transparent;
+    border: none;
+    box-shadow: inset 0 -1px 0 rgba(var(--card-border-rgb), 0.15);
+    display: flex;
+    justify-content: space-between;
+}
+
+.inputDescription:focus, .inputDescriptionAdd:focus {
+    outline: none;
+}
+
+.icon {
+    font-size: 1.5rem;
+}
+
+.iconAdd {
+    font-size: 1.5rem;
+    color: #10e6bc
+}
+
+.iconSearch {
+    font-size: 1.5rem;
+    color: #00C5FF
+}
+
+.iconInactive {
+    font-size: 1.5rem;
+    color: #767878
+}
+
+.iconClose {
+    font-size: 1.2rem;
+    color: #D94848
+}
+
+.alertAdd {
+    width: 100%;
+    color: #e4a01b;
+    font-size: 0.8rem;
+    padding: 0.1rem 0 0 0;
+}
+
+.slideIconInput {
+    display: flex;
+    align-items:center;
+    gap: 1rem;
+}
+
+
+.slideToLeft {
+    animation: slideToLeft 0.9s forwards;
+}
+
+.slideToRight {
+    animation: slideToRight 0.9s forwards;
+}
+
+@keyframes slideToLeft {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+@keyframes slideToRight {
+    0% {
+        transform: translateX(0);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .iconClose:hover {
+        color: #832929;
+        cursor: pointer;
+    }
+}
