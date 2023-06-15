@@ -3,7 +3,7 @@ import { AppContext } from '@/context/app.context'
 import { api } from '@/services/api'
 import { LoadingOutlined, MoreOutlined } from '@ant-design/icons'
 import { Tooltip } from 'antd'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { useContext, useState } from 'react'
 import { AiFillFileAdd } from 'react-icons/ai'
 import { BiRename } from 'react-icons/bi'
@@ -24,8 +24,10 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
     const [oldDescription, setOldDescription] = useState(sheet.description);
     const [already, setAlready] = useState(false);
 
-    const { user, openNotification } = useContext(AppContext);
+    const { user, openNotification, setIdSheetDetail, setPage } = useContext(AppContext);
     const { refreshData, descriptionAlreadyExists, data } = useContext(SheetContext)
+
+    const router = useRouter();
 
     const renameItem = () => {
         setOldDescription(newDescription)
@@ -170,20 +172,25 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
                     </Tooltip>
                 </div>
             ) : (
-                <Link
+                <div
                     style={{ display: 'flex', width: '90%' }}
-                    href={
-                        deleting
-                            ? '/sheet/'
-                            : `/sheet/${sheet.id}/`
-                    }
+                    onClick={() => {
+                        setIdSheetDetail(sheet.id)
+                        setPage('detail')
+                        router.replace(`/sheet?id=${sheet.id}`)
+                    }}
+                    // href={
+                    //     deleting
+                    //         ? '/sheet/'
+                    //         : `/sheet?id=${sheet.id}`
+                    // }
                     aria-disabled={deleting}
 
                     className={styles.sheetDescription}
                 >
                     <LuFileSpreadsheet className={deleting ? styles.deleting : ''} />
                     <p className={deleting ? styles.deleting : styles.description}>{newDescription}</p>
-                </Link>
+                </div>
             )}
             {
                 deleting

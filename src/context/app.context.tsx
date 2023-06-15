@@ -22,7 +22,9 @@ interface AppContextType {
     setTokenConfirm: (token: string) => void;
     openNotification: (title: string, message: string, type: 'error' | 'warn' | 'info' | 'success') => void;
     userCreated: User | null;
-    setUserCreated: (user: User | null) => void
+    setUserCreated: (user: User | null) => void;
+    idSheetDetail: number | undefined;
+    setIdSheetDetail: (id: number | undefined) => void;
 };
 
 const initialAppContext: AppContextType = {
@@ -36,7 +38,9 @@ const initialAppContext: AppContextType = {
     setTokenConfirm: () => { },
     openNotification: () => { },
     userCreated: null,
-    setUserCreated: () => { }
+    setUserCreated: () => { },
+    idSheetDetail: undefined,
+    setIdSheetDetail: () => { },
 };
 
 
@@ -46,11 +50,12 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
     const [loading, setLoading] = useState(true)
     const [user, setUser] = useState<User | null>(null);
     const [userCreated, setUserCreated] = useState<User | null>(null);
+    const [idSheetDetail, setIdSheetDetail] = useState<number | undefined>();
     const [tokenConfirm, setTokenConfirm] = useState('')
     const [page, setPage] = useState('')
     const [api, contextHolder] = notification.useNotification();
     const router = useRouter();
-    
+
     const utils = new Utils;
 
     const openNotification = (title: string, message: string, type: 'error' | 'warn' | 'info' | 'success') => {
@@ -104,12 +109,12 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
     const authenticatedPages: string[] = [
         'sheet',
         'details'
-    ]  
+    ]
     useEffect(() => {
         if (authenticatedPages.includes(page) && user === null && !loading) {
-          router.push('/user/signin');
+            router.push('/user/signin');
         }
-      }, [user, loading])
+    }, [user, loading])
 
     return (
         <AppContext.Provider value={{
@@ -123,7 +128,9 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
             setTokenConfirm,
             openNotification,
             userCreated,
-            setUserCreated
+            setUserCreated,
+            idSheetDetail,
+            setIdSheetDetail
         }}>
             <Header />
             {contextHolder}
