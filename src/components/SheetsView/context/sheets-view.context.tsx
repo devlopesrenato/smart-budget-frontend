@@ -37,19 +37,24 @@ export const SheetsProvider: React.FC<Props> = ({ children }) => {
 
     async function refreshData() {
         try {
-            const response = await api.get('sheets', {
+            await api.get('sheets', {
                 headers: {
                     Authorization: `Bearer ${user?.jwtToken}`
                 }
-            });
-            const responseData = response.data;
-            if (responseData && typeof responseData === 'object') {
-                setData(responseData);
-                setDataFull(responseData);
-                if (descriptionSearch.length) {
-                    filterData(descriptionSearch)
-                }
-            }
+            })
+                .then(({ status, data: sheets }) => {
+                    if (status == 200) {
+                        setDataFull(sheets);
+                        setData(sheets);
+                    }
+                })
+                .catch(err => {
+                    console.log(err);
+                })
+                .finally(() => {
+                    setLoading(false);
+                })
+
         } catch (error) {
             console.log(error);
         } finally {
@@ -71,7 +76,6 @@ export const SheetsProvider: React.FC<Props> = ({ children }) => {
     function filterData(descSearch: string) {
         setDescriptionSearch(descSearch)
         if (descSearch.length) {
-
             const filteredData = dataFull.filter(({ description }) =>
                 (description.trim().toLowerCase())
                     .includes(
@@ -88,6 +92,12 @@ export const SheetsProvider: React.FC<Props> = ({ children }) => {
         setLoading(true)
         refreshData()
     }, [])
+
+    useEffect(() => {
+        if (descriptionSearch.length) {
+            filterData(descriptionSearch)
+        }
+    }, [dataFull])
 
     return (
         <SheetContext.Provider

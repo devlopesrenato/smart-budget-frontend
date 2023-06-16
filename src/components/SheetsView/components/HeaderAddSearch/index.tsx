@@ -14,7 +14,7 @@ export const HeaderAddSearch = () => {
     const [msgAlertAdd, setMsgAlertAdd] = useState('')
     const [descSearch, setDescSearch] = useState('')
 
-    const { data, loading, refreshData, descriptionAlreadyExists, filterData, descriptionSearch } = useContext(SheetContext)
+    const { refreshData, descriptionAlreadyExists, filterData, descriptionSearch } = useContext(SheetContext)
     const { user, page } = useContext(AppContext);
 
     function descriptionExists(description: string) {
@@ -72,101 +72,94 @@ export const HeaderAddSearch = () => {
 
     return (<>
         <div className={styles.headerAdd}>
-            {
-                type === 'add'
-                    ? (
-                        <>
-                            <div className={styles.inputButton}>
-                                <div className={styles.slideIconInput} >
-                                    <div className={styles.buttonSlide}>
-                                        <BiSearchAlt
-                                            className={styles.iconInactive}
-                                            onClick={saveNew}
-                                        />
-                                        <AiOutlineDoubleRight
-                                            className={styles.icon}
-                                            onClick={() => setType('search')}
-                                        />
-                                    </div>
-                                    <input
-                                        disabled={loadAddNew}
-                                        placeholder='Adicionar...'
-                                        className={styles.inputDescriptionAdd}
-                                        value={description}
-                                        onChange={(e) => {
-                                            setDescription(e.target.value)
-                                            descriptionExists(e.target.value)
-                                        }}
-                                    />
-                                </div>
-                                {
-                                    loadAddNew
-                                        ? <LoadingOutlined
-                                            className={styles.iconAdd}
-                                            spin
-                                        />
-                                        : <>
-                                            <AiFillFileAdd
-                                                className={styles.iconAdd}
-                                                onClick={saveNew}
-                                            />
-                                        </>
-                                }
-                            </div>
-                            <p className={styles.alertAdd}>{msgAlertAdd}</p>
-                        </>
-                    ) : (
-                        <div className={styles.inputButton}>
-                            <div className={styles.slideIconInput}>
-                                <input
-                                    disabled={loadAddNew}
-                                    placeholder='Pesquisar...'
-                                    className={styles.inputDescriptionAdd}
-                                    value={descSearch}
-                                    onChange={(e) => {
-                                        setDescSearch(e.target.value)
-                                        filterData(e.target.value)
-                                        console.log(descriptionSearch)
-                                    }}
-                                />
-                                {
-                                    descSearch.length
-                                        ? (
-                                            <AiOutlineCloseCircle
-                                                onClick={() => {
-                                                    setDescSearch('')
-                                                    filterData('')
-                                                }}
-                                                className={styles.iconClose}
-                                            />
-                                        )
-                                        : <></>
-                                }
-                            </div>
-                            {
-                                loadAddNew
-                                    ? <LoadingOutlined
-                                        className={styles.iconAdd}
-                                        spin
-                                    />
-                                    : <div>
-                                        <BiSearchAlt
-                                            className={styles.iconAdd}
-                                            onClick={saveNew}
-                                        />
-                                        <AiOutlineDoubleLeft
-                                            className={styles.icon}
-                                            onClick={() => setType('add')}
-                                        />
-                                        <AiFillFileAdd
-                                            className={styles.iconInactive}
-                                            onClick={saveNew}
-                                        />
-                                    </div>
-                            }
+            {type === 'add' ? (
+                <div className={styles.inputButton}>
+                    <div className={styles.slideIconInput} >
+                        <div className={styles.buttonSlide}>
+                            <BiSearchAlt
+                                className={styles.iconInactive}
+                                onClick={saveNew}
+                            />
+                            <AiOutlineDoubleRight
+                                className={styles.icon}
+                                onClick={() => setType('search')}
+                                style={{ fontSize: 24 }}
+                            />
                         </div>
-                    )
-            }
+                        <input
+                            disabled={loadAddNew}
+                            placeholder='Adicionar...'
+                            className={styles.inputDescriptionAdd}
+                            value={description}
+                            onChange={(e) => {
+                                setDescription(e.target.value)
+                                descriptionExists(e.target.value)
+                            }}
+                        />
+                    </div>
+                    {
+                        loadAddNew
+                            ? <LoadingOutlined
+                                className={styles.iconAdd}
+                                spin
+                            />
+                            : <>
+                                <AiFillFileAdd
+                                    className={styles.iconAdd}
+                                    onClick={saveNew}
+                                />
+                            </>
+                    }
+                </div>
+            ) : (
+                <div className={styles.inputButton}>
+                    <div className={styles.slideIconInput}>
+                        <input
+                            disabled={loadAddNew}
+                            placeholder='Pesquisar...'
+                            className={styles.inputDescriptionAdd}
+                            value={descSearch}
+                            onChange={(e) => {
+                                setDescSearch(e.target.value)
+                                filterData(e.target.value)
+                                console.log(descriptionSearch)
+                            }}
+                        />
+                        {descSearch.length
+                            ? (<AiOutlineCloseCircle
+                                onClick={() => {
+                                    setDescSearch('')
+                                    filterData('')
+                                }}
+                                className={styles.iconClose}
+                            />)
+                            : <></>}
+                    </div>
+                    {loadAddNew
+                        ? <LoadingOutlined
+                            className={styles.iconAdd}
+                            spin
+                        />
+                        : <div>
+                            <BiSearchAlt
+                                className={styles.iconAdd}
+                                onClick={saveNew}
+                            />
+                            <AiOutlineDoubleLeft
+                                className={styles.icon}
+                                onClick={() => setType('add')}
+                                style={{ fontSize: 24 }}
+                            />
+                            <AiFillFileAdd
+                                className={styles.iconInactive}
+                                onClick={saveNew}
+                            />
+                        </div>
+                    }
+                </div>
+
+            )}
+            <p className={styles.alertAdd}>{type === 'add' ? msgAlertAdd : ''}</p>
         </div>
     </>)
 }

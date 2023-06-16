@@ -246,21 +246,21 @@ export const SheetList = () => {
                         )
                         : (
                             <>
-                                <HeaderAddSearch />
                                 {loading
                                     ? <LoadingOutlined style={{ marginTop: '3rem', fontSize: 24 }} spin />
                                     : (
                                         <div className={styles.center}>
                                             {
                                                 data.length
-                                                    ? (<>
+                                                ? (<>
                                                         {data.map((sheet) => (
                                                             <SheetListItem key={sheet.id} sheet={sheet} />
-                                                        ))}
+                                                            ))}
                                                     </>) : <p>Não há dados...</p>
                                             }
                                         </div>
                                     )}
+                                    <HeaderAddSearch />
                             </>
                         )
                 )

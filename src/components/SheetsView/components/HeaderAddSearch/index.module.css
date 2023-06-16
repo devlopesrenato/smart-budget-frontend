@@ -24,7 +24,7 @@
 
 .inputDescriptionAdd {
     max-width: 500px;
-    min-width: 300px;
+    min-width: 200px;
     font-size: 1rem; 
     color: #FFF;
     background-color: transparent;
@@ -32,6 +32,12 @@
     box-shadow: inset 0 -1px 0 rgba(var(--card-border-rgb), 0.15);
     display: flex;
     justify-content: space-between;
+}
+
+.buttonSlide {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 .inputDescription:focus, .inputDescriptionAdd:focus {
@@ -73,33 +79,6 @@
     display: flex;
     align-items:center;
     gap: 1rem;
-}
-
-
-.slideToLeft {
-    animation: slideToLeft 0.9s forwards;
-}
-
-.slideToRight {
-    animation: slideToRight 0.9s forwards;
-}
-
-@keyframes slideToLeft {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(-100%);
-    }
-}
-
-@keyframes slideToRight {
-    0% {
-        transform: translateX(0);
-    }
-    100% {
-        transform: translateX(100%);
-    }
 }
 
 @media (hover: hover) and (pointer: fine) {
