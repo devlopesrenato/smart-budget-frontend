@@ -24,6 +24,7 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
     const [newDescription, setNewDescription] = useState(sheet.description);
     const [oldDescription, setOldDescription] = useState(sheet.description);
     const [already, setAlready] = useState(false);
+    const [duplicating, setDuplicating] = useState(false);
 
     const { user, openNotification, setIdSheetDetail, setPage } = useContext(AppContext);
     const { refreshData, descriptionAlreadyExists, data } = useContext(SheetContext)
@@ -50,13 +51,14 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
             refreshData()
 
         } catch (error) {
-            setDeleting(false)
             openNotification(
                 `Erro ao excluir ${sheet.description}`,
                 'Não foi possível excluir este item! Tente novamente.',
                 'error'
             )
             console.log(error)
+        } finally {
+            setDeleting(false)
         }
     };
 
@@ -71,6 +73,8 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
                         Authorization: `Bearer ${user?.jwtToken}`
                     },
                     data: { description: newDescription }
+                }).catch(() => {
+                    setNewDescription(oldDescription)
                 })
 
         } catch (error) {
@@ -82,17 +86,16 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
     };
 
     const duplicateItem = async () => {
+        setDuplicating(true)
         try {
-            const newItemDescription = generateDuplicateDescription(sheet.description)
-
+            // const newItemDescription = generateDuplicateDescription(sheet.description)
             await api.request({
                 method: 'POST',
-                url: `/sheets`,
+                url: `/sheets/${sheet.id}`,
                 headers: {
                     'Content-Type': 'application/json',
                     Authorization: `Bearer ${user?.jwtToken}`
                 },
-                data: { description: newItemDescription }
             }).then(() => {
                 refreshData()
             })
@@ -103,6 +106,8 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
                 'error'
             )
             console.log(error)
+        } finally {
+            setDuplicating(false)
         }
     }
 
@@ -176,15 +181,12 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
                 <div
                     style={{ display: 'flex', width: '90%' }}
                     onClick={() => {
-                        setIdSheetDetail(sheet.id)
-                        setPage('detail')
-                        router.replace(`/sheet?id=${sheet.id}`)
+                        if (!deleting) {
+                            setIdSheetDetail(sheet.id)
+                            setPage('detail')
+                            router.replace(`/sheet?id=${sheet.id}`)
+                        }
                     }}
-                    // href={
-                    //     deleting
-                    //         ? '/sheet/'
-                    //         : `/sheet?id=${sheet.id}`
-                    // }
                     aria-disabled={deleting}
 
                     className={styles.sheetDescription}
@@ -197,9 +199,13 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
                 deleting
                     ? (<FaTrashAlt color='#D94848' className={styles.deleting} />)
                     : (
-                        <DropdownMenu items={items}                    >
-                            <MoreOutlined className={styles.iconMore} />
-                        </DropdownMenu>
+                        duplicating
+                            ? <LoadingOutlined spin />
+                            : (
+                                <DropdownMenu items={items}                    >
+                                    <MoreOutlined className={styles.iconMore} />
+                                </DropdownMenu>
+                            )
                     )
             }
         </div>
@@ -252,15 +258,15 @@ export const SheetList = () => {
                                         <div className={styles.center}>
                                             {
                                                 data.length
-                                                ? (<>
+                                                    ? (<>
                                                         {data.map((sheet) => (
                                                             <SheetListItem key={sheet.id} sheet={sheet} />
-                                                            ))}
+                                                        ))}
                                                     </>) : <p>Não há dados...</p>
                                             }
                                         </div>
                                     )}
-                                    <HeaderAddSearch />
+                                <HeaderAddSearch />
                             </>
                         )
                 )

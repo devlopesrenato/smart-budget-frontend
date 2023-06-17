@@ -1,11 +1,13 @@
 'use client'
 import { Header } from '@/components/Header';
+import { api } from '@/services/api';
 import { Utils } from '@/utils/utils';
 import { CloseOutlined } from '@ant-design/icons';
 import { notification } from 'antd';
 import { useRouter } from 'next/navigation';
 import React, { createContext, useEffect, useState } from 'react';
 import styles from './app.module.css';
+const _ = new Utils;
 
 type Props = {
     children: React.ReactNode;
@@ -53,7 +55,7 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
     const [idSheetDetail, setIdSheetDetail] = useState<number | undefined>();
     const [tokenConfirm, setTokenConfirm] = useState('')
     const [page, setPage] = useState('')
-    const [api, contextHolder] = notification.useNotification();
+    const [, contextHolder] = notification.useNotification();
     const router = useRouter();
 
     const utils = new Utils;
@@ -92,7 +94,22 @@ export const AppProvider: React.FC<Props> = ({ children }) => {
         try {
             const userData = utils.getCookie('userData');
             if (userData) {
-                setUser(JSON.parse(userData))
+                const user: User = JSON.parse(userData)
+                api.get(`/users/${user.id}`, {
+                    headers: {
+                        Authorization: `Bearer ${user.jwtToken}`
+                    }
+                })
+                    .then(({ data }) => {
+                        const jwtToken = user.jwtToken
+                        const { id, name, email } = data;
+                        const cookieExpiresInSeconds = 43200
+                        utils.setCookie('userData', JSON.stringify({ id, name, email, jwtToken }), { expires: cookieExpiresInSeconds })
+                        setUser({ id, name, email, jwtToken })
+                    })
+                    .catch(error => {
+                        setUser(null)
+                    })
             } else {
                 setUser(null)
             }

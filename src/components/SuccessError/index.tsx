@@ -8,12 +8,13 @@ interface SuccessErrorProps {
   title: string;
   subTitle: string;
   buttonTitle?: string,
-  buttonLink?: string
+  buttonLink?: string,
+  buttonOnClick?: () => void
 }
 
 const _ = new Utils();
 
-const SuccessError: React.FC<SuccessErrorProps> = ({ type, subTitle, title, buttonTitle = 'Página Inicial', buttonLink = '/' }) => {
+const SuccessError: React.FC<SuccessErrorProps> = ({ type, subTitle, title, buttonTitle = 'Página Inicial', buttonLink = '/', buttonOnClick }) => {
 
   return (
     <div className={styles.center}>
@@ -28,6 +29,7 @@ const SuccessError: React.FC<SuccessErrorProps> = ({ type, subTitle, title, butt
           >
             <button
               className={styles.button}
+              onClick={buttonOnClick}
             >
               {buttonTitle}
             </button>

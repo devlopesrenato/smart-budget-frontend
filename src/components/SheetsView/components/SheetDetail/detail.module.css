@@ -14,8 +14,29 @@
 
 .center {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
   padding: 4rem 0;
+}
+
+
+.tableColor {
+  background-color: #000;
+}
+
+.custom-row {
+  background-color: #462
+  /* Estilos para as linhas da tabela */
+}
+
+.custom-row.ant-table-row:hover {
+  background-color: #462
+  /* Estilos para as linhas da tabela quando o mouse estiver sobre elas */
+}
+
+.ant-table-thead > tr > th {
+  background-color: #462
+  /* Estilos para o cabeçalho da tabela */
 }

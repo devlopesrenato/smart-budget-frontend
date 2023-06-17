@@ -4,6 +4,8 @@ import SuccessError from '@/components/SuccessError';
 import { AppContext } from '@/context/app.context';
 import { api } from '@/services/api';
 import { LoadingOutlined } from '@ant-design/icons';
+import { Table } from 'antd';
+import { ColumnsType } from 'antd/es/table';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
 import styles from './detail.module.css';
@@ -12,6 +14,13 @@ type Params = {
     params: {
         id: number
     }
+}
+
+interface DataType {
+    key: React.Key;
+    name: string;
+    age: number;
+    address: string;
 }
 
 export default function Details({ params: { id } }: Params) {
@@ -60,6 +69,29 @@ export default function Details({ params: { id } }: Params) {
 
     setPage('details')
 
+    const columns: ColumnsType<DataType> = [
+        {
+            title: 'Descrição',
+            dataIndex: 'description',
+        },
+        {
+            title: 'Valor',
+            dataIndex: 'value',
+            render: (text: string) => parseFloat(text).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+        }
+    ];
+
+    const rowSelection = {
+        onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
+            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+        },
+        getCheckboxProps: (record: DataType) => ({
+            disabled: record.name === 'Disabled User',
+            name: record.name,
+        }),
+    };
+
+
     return (
         error
             ? (
@@ -69,6 +101,11 @@ export default function Details({ params: { id } }: Params) {
                     subTitle={errorMessage}
                     buttonLink='/sheet'
                     buttonTitle='VOLTAR'
+                    buttonOnClick={() => {
+                        setIdSheetDetail(undefined)
+                        setPage('sheet')
+                        router.replace(`/sheet`)
+                    }}
                 />
             )
             : user === null || loading || load
@@ -82,6 +119,26 @@ export default function Details({ params: { id } }: Params) {
                         <p>Contas a receber: {dataSheet?.totalAccountsReceivable}</p>
 
                         <div className={styles.center}>
+                            <Table
+                                scroll={{ x: '300px' }}
+                                rowSelection={{
+                                    type: 'checkbox',
+                                    ...rowSelection,
+                                }}
+                                columns={columns}
+                                dataSource={dataSheet?.accountsPayable || []}
+                            />
+                            <Table
+                                rootClassName={styles.tableColor}                                
+                                style={{ backgroundColor: '#FFF' }}
+                                scroll={{ x: '300px' }}
+                                rowSelection={{
+                                    type: 'checkbox',
+                                    ...rowSelection,
+                                }}
+                                columns={columns}
+                                dataSource={dataSheet?.accountsReceivable || []}
+                            />
                             <Button
                                 title={'VOLTAR'}
                                 type={undefined}

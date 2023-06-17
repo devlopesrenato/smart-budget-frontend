@@ -64,8 +64,10 @@ export const Header: React.FC = () => {
         {
             label:
                 <p className={styles.userNameMenu}>
-                    {user?.name.slice(0, 15)}
-                    {user && user.name.length > 15 ? '...' : ''}
+                    <strong>
+                        {user?.name.slice(0, 15)}
+                        {user && user.name.length > 15 ? '...' : ''}
+                    </strong>
                 </p>,
             key: 'userName'
         },
@@ -93,11 +95,11 @@ export const Header: React.FC = () => {
                 >
                     <p>{getTitle(page)}</p>
                     <div className={styles.userSection}>
-                        <DropdownMenu
+                        <DropdownMenu                        
                             items={itemsMenu}
                             placement={'bottomLeft'}
                         >
-                            <Avatar style={{ backgroundColor: '#332d2d' }} icon={<UserOutlined />} />
+                            <Avatar style={{ backgroundColor: 'transparent' }} icon={<UserOutlined />} />
                         </DropdownMenu>
                     </div>
                 </div>
