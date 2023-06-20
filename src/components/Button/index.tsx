@@ -6,6 +6,9 @@ interface ButtonProps {
     disabled?: boolean;
     visible?: boolean;
     type: 'submit' | 'button' | 'reset' | undefined;
+    width?: string;
+    minWidth?: string;
+    maxWidth?: string;
 
 }
 
@@ -14,12 +17,20 @@ export const Button: React.FC<ButtonProps> = ({
     onClick,
     disabled = false,
     visible = true,
-    type = undefined
+    type = undefined,
+    width = '100%',
+    minWidth,
+    maxWidth,
 }) => {
 
     return (
         <button
-            style={{ display: visible ? 'flex' : 'none' }}
+            style={{
+                display: visible ? 'flex' : 'none',
+                width,
+                maxWidth,
+                minWidth
+            }}
             type={type}
             disabled={disabled}
             className={styles.button}

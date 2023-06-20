@@ -95,11 +95,11 @@ export const Header: React.FC = () => {
                 >
                     <p>{getTitle(page)}</p>
                     <div className={styles.userSection}>
-                        <DropdownMenu                        
+                        <DropdownMenu
                             items={itemsMenu}
                             placement={'bottomLeft'}
                         >
-                            <Avatar style={{ backgroundColor: 'transparent' }} icon={<UserOutlined />} />
+                            <Avatar className={styles.avatar} icon={<UserOutlined />} />
                         </DropdownMenu>
                     </div>
                 </div>

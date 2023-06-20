@@ -1,0 +1,90 @@
+.accountList {
+    max-width: 500px;
+    min-width: 300px;
+    margin: 0.1rem;
+    padding: 0.2rem;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    align-items: center;
+}
+  
+.accountList:hover {
+    background: rgba(var(--card-rgb), 0.1);  
+    box-shadow: inset 1px 1px 0 rgba(var(--card-border-rgb), 0.15);
+}
+
+.accountDescription {  
+    gap: 0.3rem;
+    display: flex;  
+    align-items: center;
+    justify-content: space-between;
+}
+
+.accountDescription svg{
+    width: 15px;  
+}
+
+.inputDescription { 
+    max-width: 500px;
+    min-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #10e6bc;
+    border: none;
+    background-color: transparent;
+    font-size: 1rem;  
+    width: 80%;
+}
+  
+.inputDescription:focus, .inputDescriptionAdd:focus, .inputValue:focus {
+    outline: none;
+}
+
+.inputValue { 
+    color: #10e6bc;
+    border: none;
+    background-color: transparent;
+    font-size: 1rem;
+    width: 30%;
+}
+
+.buttonSave {
+    color: #10e6bc;
+    border: none;
+    background-color: transparent;
+}
+  
+.buttonSave:hover{  
+    cursor: pointer
+}
+  
+.areaButtonNew {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.newItem, .closeNewItem {
+    font-size: 0.9rem;
+    align-items: center;
+    padding: 0.5rem 0 0.5rem 0;
+}
+  
+.newItem { 
+    color: #10e6bc;
+}
+
+.closeNewItem {
+    color: #D94848;
+}
+
+.newItem svg, .closeNewItem svg {
+    margin-right: 0.5rem;
+}    
+
+.newItem:hover, .closeNewItem:hover {
+    cursor: pointer;
+}

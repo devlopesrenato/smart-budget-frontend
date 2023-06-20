@@ -5,7 +5,8 @@
     border: 0.1rem solid #00103e;
     border-radius: 0.4rem;
     font-size: 1rem;
-    background-color: 'transparent'
+    background-color: #e600000f;
+    color: #FFF;
 }
 
 .input::placeholder {

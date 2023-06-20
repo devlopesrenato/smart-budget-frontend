@@ -31,7 +31,7 @@ export const DropdownMenu: React.FC<Props> = ({ children, items = [], placement 
             }}
         >
             {items.map(item =>
-                <Menu.Item                    
+                <Menu.Item
                     style={{ color: 'white' }}
                     icon={item.icon}
                     key={item.key}
@@ -45,7 +45,10 @@ export const DropdownMenu: React.FC<Props> = ({ children, items = [], placement 
 
 
     return (
-        <Dropdown dropdownRender={() => menu} placement={placement}>
+        <Dropdown
+            dropdownRender={() => menu}
+            placement={placement}            
+        >
             {children}
         </Dropdown>
     )

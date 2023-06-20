@@ -27,4 +27,12 @@ export class Utils {
     public removeCookie(key: string) {
         Cookies.remove(key);
     };
+
+    public valueToCurrency(value: any) {
+        return parseFloat(value)
+            .toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            })
+    }
 } 

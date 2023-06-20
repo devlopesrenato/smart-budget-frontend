@@ -9,9 +9,9 @@ import { BiRename } from 'react-icons/bi'
 import { FaTrashAlt } from 'react-icons/fa'
 import { IoDuplicateSharp } from 'react-icons/io5'
 import { LuFileSpreadsheet } from 'react-icons/lu'
-import { SheetContext } from '../context/sheets-view.context'
-import { HeaderAddSearch } from './HeaderAddSearch'
-import Details from './SheetDetail/details'
+import { SheetContext } from '../../context/sheets-view.context'
+import { HeaderAddSearch } from '../HeaderAddSearch'
+import Details from '../SheetDetail/details'
 import styles from './sheet-list.module.css'
 
 interface SheetListItemProps {
@@ -88,7 +88,6 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
     const duplicateItem = async () => {
         setDuplicating(true)
         try {
-            // const newItemDescription = generateDuplicateDescription(sheet.description)
             await api.request({
                 method: 'POST',
                 url: `/sheets/${sheet.id}`,
@@ -138,24 +137,6 @@ const SheetListItem: React.FC<SheetListItemProps> = ({ sheet }) => {
         } else {
             setAlready(false)
         }
-    }
-
-    const generateDuplicateDescription = (originalDescription: string) => {
-        let duplicateCount = 0
-        let newItemDescription = originalDescription
-
-        while (isDescriptionDuplicate(newItemDescription)) {
-            duplicateCount++
-            newItemDescription = `${originalDescription} (cópia ${duplicateCount})`
-        }
-
-        return newItemDescription
-    }
-
-    const isDescriptionDuplicate = (description: string) => {
-        return data.some(({ description: existingDescription }) => {
-            return existingDescription === description
-        })
     }
 
     return (
@@ -245,10 +226,11 @@ export const SheetList = () => {
                 ? <LoadingOutlined style={{ fontSize: 24 }} spin />
                 : (
                     idSheetDetail
-                        ? (
+                        ? (<>
                             <Details params={{
                                 id: idSheetDetail
-                            }} />
+                            }} />                            
+                        </>
                         )
                         : (
                             <>

@@ -37,8 +37,8 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
     <div>
       <div
         className={styles.inputContainer}
-      >
-        <input          
+      >        
+        <input
           disabled={disabled}
           name={id}
           id={id}

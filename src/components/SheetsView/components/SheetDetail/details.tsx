@@ -3,24 +3,18 @@ import { Button } from '@/components/Button';
 import SuccessError from '@/components/SuccessError';
 import { AppContext } from '@/context/app.context';
 import { api } from '@/services/api';
+import { Utils } from '@/utils/utils';
 import { LoadingOutlined } from '@ant-design/icons';
-import { Table } from 'antd';
-import { ColumnsType } from 'antd/es/table';
 import { useRouter } from 'next/navigation';
 import { useContext, useEffect, useState } from 'react';
+import { AccountListItem } from './components/AccountsList';
+import { InputNew } from './components/InputNew';
 import styles from './detail.module.css';
 
 type Params = {
     params: {
         id: number
     }
-}
-
-interface DataType {
-    key: React.Key;
-    name: string;
-    age: number;
-    address: string;
 }
 
 export default function Details({ params: { id } }: Params) {
@@ -31,6 +25,7 @@ export default function Details({ params: { id } }: Params) {
     const [errorMessage, setErrorMessage] = useState('')
 
     const router = useRouter();
+    const utils = new Utils();
 
     async function getDataSheet() {
         try {
@@ -69,28 +64,20 @@ export default function Details({ params: { id } }: Params) {
 
     setPage('details')
 
-    const columns: ColumnsType<DataType> = [
-        {
-            title: 'Descrição',
-            dataIndex: 'description',
-        },
-        {
-            title: 'Valor',
-            dataIndex: 'value',
-            render: (text: string) => parseFloat(text).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }),
+    function descriptionAlreadyExists(typedDescription: string, type: 'rec' | 'pay') {
+        const data = type === 'rec'
+            ? dataSheet?.accountsReceivable
+            : dataSheet?.accountsPayable;
+
+        const sheet = data?.find(({ description, id }) =>
+            description.trim().toLowerCase() === typedDescription.trim().toLowerCase()
+        )
+        if (sheet) {
+            return true
+        } else {
+            return false
         }
-    ];
-
-    const rowSelection = {
-        onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-            console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-        },
-        getCheckboxProps: (record: DataType) => ({
-            disabled: record.name === 'Disabled User',
-            name: record.name,
-        }),
-    };
-
+    }
 
     return (
         error
@@ -114,32 +101,57 @@ export default function Details({ params: { id } }: Params) {
                     <>
                         <h2>{dataSheet?.description}</h2>
 
-                        <p>Balanço: {dataSheet?.balance}</p>
-                        <p>Contas a pagar: {dataSheet?.totalAccountsPayable}</p>
-                        <p>Contas a receber: {dataSheet?.totalAccountsReceivable}</p>
+                        <p className={styles.balance}>Balanço: {utils.valueToCurrency(dataSheet?.balance)}</p>
 
                         <div className={styles.center}>
-                            <Table
-                                scroll={{ x: '300px' }}
-                                rowSelection={{
-                                    type: 'checkbox',
-                                    ...rowSelection,
-                                }}
-                                columns={columns}
-                                dataSource={dataSheet?.accountsPayable || []}
-                            />
-                            <Table
-                                rootClassName={styles.tableColor}                                
-                                style={{ backgroundColor: '#FFF' }}
-                                scroll={{ x: '300px' }}
-                                rowSelection={{
-                                    type: 'checkbox',
-                                    ...rowSelection,
-                                }}
-                                columns={columns}
-                                dataSource={dataSheet?.accountsReceivable || []}
-                            />
+                            <div className={styles.section}>
+                                <div className={styles.titleSection}>
+                                    <h4>Entradas</h4>
+                                    {utils.valueToCurrency(dataSheet?.totalAccountsReceivable)}
+                                </div>
+                                {<>
+                                    {dataSheet?.accountsReceivable.map((account: AccountType) => (
+                                        <AccountListItem
+                                            refreshData={() => getDataSheet()}
+                                            key={account.id}
+                                            account={account}
+                                            route={'/accounts-receivable'}
+                                        />
+                                    ))}
+                                    <InputNew
+                                        sheetId={dataSheet?.id || -1}
+                                        route={'/accounts-receivable'}
+                                        refreshData={() => getDataSheet()}
+                                        validation={(value, type) => descriptionAlreadyExists(value, type)}
+                                    />
+                                </>}
+                            </div>
+                            <div className={styles.section}>
+                                <div className={styles.titleSection}>
+                                    <h4>Saídas</h4>
+                                    {utils.valueToCurrency(dataSheet?.totalAccountsPayable)}
+                                </div>
+                                {<>
+                                    {dataSheet?.accountsPayable.map((account: AccountType) => (
+                                        <AccountListItem
+                                            refreshData={() => getDataSheet()}
+                                            key={account.id}
+                                            account={account}
+                                            route={'/accounts-payable'}
+                                        />
+                                    ))}
+                                    <InputNew
+                                        sheetId={dataSheet?.id || -1}
+                                        route={'/accounts-payable'}
+                                        refreshData={() => getDataSheet()}
+                                        validation={(value, type) => descriptionAlreadyExists(value, type)}
+                                    />
+                                </>}
+                            </div>
                             <Button
+                                width='100%'
+                                maxWidth='500px'
+                                minWidth='300px'
                                 title={'VOLTAR'}
                                 type={undefined}
                                 onClick={() => {
