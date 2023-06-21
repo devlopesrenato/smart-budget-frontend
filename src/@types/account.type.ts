@@ -2,8 +2,8 @@ type AccountType = {
     id: number,
     description: string,
     value: number,
-    createdAt: Date,
-    updatedAt: Date,
+    createdAt: string,
+    updatedAt: string,
     creatorUserId: number,
     sheetId: number
 }

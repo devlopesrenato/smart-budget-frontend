@@ -110,6 +110,32 @@ export const InputNew: React.FC<InputNewProps> = ({ route, refreshData, validati
 
     return (
         <>
+            <div className={styles.areaButtonNew}>
+                <div
+                    style={{ display: viewInput ? 'none' : 'flex' }}
+                    onClick={() => {
+                        setViewInput(true)
+                    }}
+                    className={styles.newItem}
+                >
+                    <PlusCircleOutlined />
+                    Novo
+                </div>
+                <div
+                    style={{ display: viewInput ? 'flex' : 'none' }}
+                    onClick={() => {
+                        setDescription('')
+                        setValue('')
+                        setAlready(false)
+                        setViewInput(false)
+                    }}
+                    className={styles.closeNewItem}
+                >
+                    <AiOutlineCloseCircle />
+                    Cancelar
+                </div>
+
+            </div>
             <div className={styles.accountList} style={{ display: viewInput ? 'flex' : 'none' }}>
                 <div
                     className={styles.accountDescription}
@@ -148,32 +174,6 @@ export const InputNew: React.FC<InputNewProps> = ({ route, refreshData, validati
                         onClick={() => saveItem()}
                     />
                 }
-            </div>
-            <div className={styles.areaButtonNew}>
-                <div
-                    style={{ display: viewInput ? 'none' : 'flex' }}
-                    onClick={() => {
-                        setViewInput(true)
-                    }}
-                    className={styles.newItem}
-                >
-                    <PlusCircleOutlined />
-                    Novo
-                </div>
-                <div
-                    style={{ display: viewInput ? 'flex' : 'none' }}
-                    onClick={() => {
-                        setDescription('')
-                        setValue('')
-                        setAlready(false)
-                        setViewInput(false)
-                    }}
-                    className={styles.closeNewItem}
-                >
-                    <AiOutlineCloseCircle />
-                    Cancelar
-                </div>
-
             </div>
         </>
     )

@@ -41,6 +41,16 @@
   padding: 0.3rem
 }
 
+.titleSubSectionRight {  
+  display: flex;
+  align-items: center;
+}
+
+.titleSubSectionRight svg { 
+  color: #24b1f7;
+  margin: 0 0.3rem 0 1.5rem;  
+}
+
 .tableColor {
   background-color: #000;
 }
