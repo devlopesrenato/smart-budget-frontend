@@ -1,5 +1,16 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## ACCESS TO APP WEB PAGE
+
+The app page is running at: https://smartbudget.onrender.com
+
+You can do a test using the following data:
+- email: admin@admin.com
+- password: 12345
+
+or you can create your account.
+
+
 ## Getting Started
 
 First, run the development server:
